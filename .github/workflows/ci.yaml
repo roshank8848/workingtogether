@@ -1,0 +1,44 @@
+name: Build, Test, and Deploy
+
+on:
+  # Allows manual triggering from the Actions tab
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up environment
+        # Replace with your language setup, e.g., actions/setup-node@v4
+        run: echo "Setting up build environment..."
+
+      - name: Build
+        run: echo "Running build steps..." # e.g., npm run build
+
+      - name: Run Tests
+        run: echo "Running automated tests..." # e.g., npm test
+
+  deploy:
+    # Ensures deployment only starts if build/test succeeds
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    # Optional: Use GitHub Environments for protection rules
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+      - name: Deploy to ${{ github.event.inputs.environment }}
+        run: |
+          echo "Deploying to ${{ github.event.inputs.environment }}..."
+          # Insert your deployment commands (e.g., AWS, Azure, Firebase)
